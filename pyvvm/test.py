@@ -5,7 +5,8 @@ def test_bf():
     '''Create a property with a backing field'''
 
     class A(object):
-        foo = p.backed_property('_foo')
+        _foo = 0
+        foo = p.property_a('_foo')
 
     a = A()
 
@@ -26,7 +27,7 @@ def test_conv():
     conv_show = mock.Mock(return_value='show')
 
     class A(object):
-        foo = p.backed_property('_foo', show=conv_show, read=conv_read)
+        foo = p.property_a('_foo', show=conv_show, read=conv_read)
         _foo = 'initial'
 
     a = A()
@@ -49,7 +50,7 @@ def test_backing():
 
     class A(object):
 
-        foo = p.model_property('foo', '_model')
+        foo = p.property_a('foo', '_model')
 
     model = M()
     a = A()
@@ -66,7 +67,7 @@ def test_notify():
 
         _events = None
         _foo = 0
-        foo = p.backed_property('_foo', event_storage=p.Field('_events'))
+        foo = p.property_a('_foo', cn=True)
 
     cb = mock.Mock()
     cb.assert_called()
@@ -91,7 +92,7 @@ def test_enabled():
 
     class A(object):
 
-        bar = p.backed_property('_bar')
+        bar = p.property_a('_bar')
 
         @bar('enabled')
         def is_bar_enabled(self):
@@ -110,7 +111,7 @@ def test_plug_conv():
 
     class A(object):
 
-        foo = p.backed_property('_foo')
+        foo = p.property_a('_foo')
         _foo = 10
 
         @foo('show')

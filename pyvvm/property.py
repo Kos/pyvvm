@@ -48,8 +48,10 @@ class Property(object):
 
     def __set__(self, obj, uvalue):
         value = self._read(uvalue) if self._mread is None else self._mread(obj, uvalue)
-        self._storage[obj] = value
-        self.notify(obj)
+        value_prev = self._storage[obj]
+        if value != value_prev:
+            self._storage[obj] = value
+            self.notify(obj)
 
     def __delete__(self, obj):
         del self._storage[obj]
@@ -115,11 +117,17 @@ class Property(object):
     _mshow = None
 
 
-def backed_property(fieldname, *args, **kwargs):
-    return Property(Field(fieldname), *args, **kwargs)
-
-def model_property(fieldname, modelfieldname, *args, **kwargs):
-    return Property(ModelField(fieldname, modelfieldname), *args, **kwargs)
+def property_a(name, model=None, cn=False, **kwargs):
+    # WHAT SHOULD THE DEFAULT BE?
+    if model is None:
+        storage = Field(name)
+    else:
+        storage = ModelField(name, model)
+    if cn:
+        event_storage = EventStorage(name)
+    else:
+        event_storage = None
+    return Property(storage, event_storage, **kwargs)
 
 
 class Field(object):
@@ -151,3 +159,20 @@ class ModelField(object):
         
     def __delitem__(self, object):
         delattr(getattr(object, self.modelname), self.name)
+
+class EventStorage(object):
+
+    # TODO revamp to use one dict
+
+    def __init__(self, name):
+        self.name = name
+        self.propname = '_events_{0}'.format(name)
+
+    def __getitem__(self, object):
+        return getattr(object, self.propname, None)
+
+    def __setitem__(self, object, value):
+        setattr(object, self.propname, value)
+
+    def __delitem__(self, object):
+        delattr(object, self.name)
