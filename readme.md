@@ -9,6 +9,12 @@ A library designed to help with Model-View-ViewModel programming in Python. Prov
 - UI data binding code for PySide (Qt) that uses the interface.
 - Examples
 
+# How does it look like?
+
+Read the [examples][example] for a live walkthrough on how to use `pyvvm` in practice.
+
+[example]: pyvvm/test_examples.py
+
 # Status
 
 WIP. The thing is written and field-tested inside a larger project; I'm extracting, refactoring and documenting.
